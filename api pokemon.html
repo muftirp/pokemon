@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <title>AJAX Ambil Data Pokemon</title>
+</head>
+<body>
+    <div class="container">
+        <!-- Content here -->
+        <h1>Ambil Pokemon</h1>
+
+        <button type="button" onclick="ambilData()" id="ambildata" class="btn btn-primary mb-2">Get</button>
+        <div class="row">
+            <div class="card-group" id="hasil">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function ambilData() {
+            const url = await fetch("https://pokeapi.co/api/v2/pokemon?limit=30 ", {
+                method: "GET"
+            })
+
+            const json = await url.json();
+            const results = json.results;
+
+            let hasil = "";
+            for (let i = 0; i < results.length; i++) {
+                // console.log(results[i].url);
+                const url2 = await fetch(results[i].url, {
+                    method: "GET"
+                })
+
+                const json2 = await url2.json();
+                let id = json2.id;
+                let nama = json2.name;
+                let tipe = json2.types[0].type.name;
+                let image = json2.sprites.front_default;
+                // console.log(id, nama, tipe, image);
+                
+                // untuk class background
+                switch(tipe) {
+                    case "grass":
+                        bg = "text-bg-success";
+                        break;
+                    case "fire":
+                        bg = "text-bg-danger";
+                        break;
+                    case "water":
+                        bg = "text-bg-primary";
+                        break;
+                    case "flying":
+                        bg = "text-bg-warning";
+                        break;
+                    case "poison":
+                        bg = "text-bg-info";
+                        break;
+                    case "electric":
+                        bg = "text-bg-secondary";
+                        break;
+                    default:
+                        bg = "text-bg-dark";
+                }
+
+                // tampilan data
+                hasil += `
+                    <div class="col col-sm-3">
+                        <div class="card ${bg}">
+                            <div class="card-body">
+                                <h5 class="card-header bg-transparent">ID: ${id} - ${nama}</h5>
+                                <img src="${image}" class="card-img-top" alt="${nama}">
+                                <div class="card-body">
+                                    <h5 class="card-title">Tipe: ${tipe}</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+            }
+            document.getElementById("hasil").innerHTML = hasil;
+        }
+    </script>
+    
+</body>
+</html>
